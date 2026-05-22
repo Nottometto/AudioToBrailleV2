@@ -152,10 +152,10 @@ function switchTab(tabName) {
     navLog.classList.remove('active');
 
     if (tabName === 'remote') {
-        remotePage.style.display = 'block';
+        remotePage.style.display = 'flex';
         navRemote.classList.add('active');
     } else if (tabName === 'log') {
-        logPage.style.display = 'block';
+        logPage.style.display = 'flex';
         navLog.classList.add('active');
     }
 }
@@ -193,3 +193,139 @@ function applyHighlight(index){
         span.style.fontWeight = 'bold';
     }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    const dialContainer = document.getElementById('dial-container');
+    const dialFill = document.getElementById('dial-fill');
+    const dialKnob = document.getElementById('dial-knob');
+    const dialTextValue = document.getElementById('dial-text-value');
+    const speedDisplay = document.getElementById('speed-display');
+    const hiddenSpeedInput = document.getElementById('speed-slider');
+    const dialTicks = document.getElementById('dial-ticks');
+
+    // Configuration
+    const minVal = 0.1;
+    const maxVal = 10.0;
+    const radius = 80;
+    const centerX = 100;
+    const centerY = 100;
+    const arcLength = Math.PI * radius; // Approx 251.2
+
+    // Generate ticks from 0 to 10
+    function createTicks() {
+        for (let i = 0; i <= 10; i++) {
+            // Angle from -180 deg (left) to 0 deg (right)
+            const angleDeg = -180 + (i * 18); 
+            const angleRad = angleDeg * (Math.PI / 180);
+            
+            // Major ticks for 0, 2, 4, 6, 8, 10
+            const isMajor = i % 2 === 0;
+            const tickLength = isMajor ? 10 : 5;
+            
+            const x1 = centerX + (radius - 15) * Math.cos(angleRad);
+            const y1 = centerY + (radius - 15) * Math.sin(angleRad);
+            const x2 = centerX + (radius - 15 + tickLength) * Math.cos(angleRad);
+            const y2 = centerY + (radius - 15 + tickLength) * Math.sin(angleRad);
+
+            const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            line.setAttribute("x1", x1);
+            line.setAttribute("y1", y1);
+            line.setAttribute("x2", x2);
+            line.setAttribute("y2", y2);
+            line.setAttribute("class", isMajor ? "dial-tick major" : "dial-tick");
+            dialTicks.appendChild(line);
+        }
+    }
+
+    createTicks();
+
+    // Update Visuals
+    function updateDialVisuals(value) {
+        // Clamp value
+        value = Math.max(minVal, Math.min(maxVal, value));
+        
+        // Calculate percentage (0 to 1)
+        const percentage = value / maxVal;
+        
+        // Update SVG Stroke
+        const dashOffset = arcLength - (percentage * arcLength);
+        dialFill.style.strokeDashoffset = dashOffset;
+        
+        // Update Knob Rotation (0 to 180 degrees)
+        const rotation = percentage * 180;
+        dialKnob.style.transform = `rotate(${rotation}deg)`;
+        
+        // Update Texts
+        const formattedVal = value.toFixed(1);
+        dialTextValue.textContent = `${formattedVal}x`;
+        speedDisplay.textContent = formattedVal;
+        hiddenSpeedInput.value = formattedVal;
+        
+        // Optional: Dispatch change event for your existing socket.io code
+        const event = new Event('change');
+        hiddenSpeedInput.dispatchEvent(event);
+    }
+
+    // Drag Interaction Logic
+    let isDragging = false;
+
+    function calculateValueFromEvent(e) {
+        const rect = dialContainer.getBoundingClientRect();
+        
+        // Determine touch or mouse position
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        
+        // Calculate coordinates relative to SVG center
+        // Note: SVG viewBox is 200x120, we need to map actual pixels to viewBox scale
+        const scaleX = 200 / rect.width;
+        const scaleY = 120 / rect.height;
+        
+        const x = (clientX - rect.left) * scaleX - centerX;
+        const y = (clientY - rect.top) * scaleY - centerY;
+
+        // Calculate angle
+        let angle = Math.atan2(y, x) * (180 / Math.PI);
+
+        // Clamp angle to the top semi-circle (-180 to 0)
+        if (angle > 0) {
+            angle = x > 0 ? 0 : -180; 
+        }
+
+        // Map angle (-180...0) to percentage (0...1)
+        const percentage = (angle + 180) / 180;
+        
+        // Map percentage to our min/max values
+        const value = percentage * maxVal;
+        
+        // Snap to nearest 0.1
+        return Math.round(value * 10) / 10;
+    }
+
+    function onDragStart(e) {
+        isDragging = true;
+        updateDialVisuals(calculateValueFromEvent(e));
+        e.preventDefault(); // Prevent text selection/scrolling
+    }
+
+    function onDragMove(e) {
+        if (!isDragging) return;
+        updateDialVisuals(calculateValueFromEvent(e));
+    }
+
+    function onDragEnd() {
+        isDragging = false;
+    }
+
+    // Event Listeners
+    dialContainer.addEventListener('mousedown', onDragStart);
+    document.addEventListener('mousemove', onDragMove);
+    document.addEventListener('mouseup', onDragEnd);
+
+    dialContainer.addEventListener('touchstart', onDragStart, { passive: false });
+    document.addEventListener('touchmove', onDragMove, { passive: false });
+    document.addEventListener('touchend', onDragEnd);
+
+    // Initialize to default value (2.0)
+    updateDialVisuals(parseFloat(hiddenSpeedInput.value));
+});

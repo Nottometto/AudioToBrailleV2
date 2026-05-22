@@ -252,3 +252,59 @@ input[type="range"] {
     height: 100%;
     min-height: 400px;
 }
+
+/* Semicircle Dial Styles */
+.dial-container {
+    width: 100%;
+    max-width: 300px;
+    margin: 20px auto 0;
+    position: relative;
+    touch-action: none; /* Prevents page scrolling when dragging the dial on mobile */
+}
+
+#speed-dial {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+.dial-track {
+    fill: none;
+    stroke: #2a2a2a; /* Dark background track */
+    stroke-width: 12;
+    stroke-linecap: round;
+}
+
+.dial-fill {
+    fill: none;
+    stroke: #D66D3A; /* Copper/Orange from the image */
+    stroke-width: 12;
+    stroke-linecap: round;
+    stroke-dasharray: 251.2; /* Circumference of the semi-circle (PI * 80) */
+    stroke-dashoffset: 200.96; /* Default to 2.0 (20% filled) */
+}
+
+.dial-tick {
+    stroke: #666;
+    stroke-width: 2;
+    stroke-linecap: round;
+}
+
+.dial-tick.major {
+    stroke: #fff;
+    stroke-width: 3;
+}
+
+.dial-knob {
+    fill: #D4E05B; /* Yellow-greenish indicator from the image */
+    cursor: pointer;
+    transform-origin: 100px 100px; /* Center of the SVG */
+}
+
+.dial-text {
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 24px;
+    fill: #D4E05B; /* Yellow-greenish text from the image */
+    text-anchor: middle;
+    font-weight: 600;
+}

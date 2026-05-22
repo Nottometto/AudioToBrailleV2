@@ -65,16 +65,31 @@
                 </div>
             </div>
 
-            <!-- Speed Slider -->
-            <div class="slider-section">
-                <div class="slider-header">
-                    <label for="speed-slider">Speed</label>
-                    <span id="speed-display" class="badge badge-accent">2</span>
-                </div>
-                <input type="range" id="speed-slider" min="0.1" max="10" step="0.1" value="2">
+        <!-- Speed Semicircle Dial -->
+        <div class="slider-section">
+            <div class="slider-header">
+                <label>Reading Speed</label>
+                <span id="speed-display" class="badge badge-accent">2.0</span>
+            </div>
+            
+            <!-- Semicircle Dial Container -->
+            <div class="dial-container" id="dial-container">
+                <svg viewBox="0 0 200 120" id="speed-dial">
+                    <!-- Background Arc -->
+                    <path d="M 20 100 A 80 80 0 0 1 180 100" class="dial-track" />
+                    <!-- Active Fill Arc -->
+                    <path d="M 20 100 A 80 80 0 0 1 180 100" class="dial-fill" id="dial-fill" />
+                    <!-- Ticks generated via JS -->
+                    <g id="dial-ticks"></g>
+                    <!-- Central Text -->
+                    <text x="100" y="85" class="dial-text" id="dial-text-value">2.0x</text>
+                    <!-- Indicator / Knob -->
+                    <polygon points="15,100 25,100 20,88" class="dial-knob" id="dial-knob" />
+                </svg>
+                <!-- Hidden input to keep compatibility with your existing script1.js -->
+                <input type="hidden" id="speed-slider" value="2.0">
             </div>
         </div>
-
         <!-- Log Page -->
         <div id="page-log" class="page-content" style="display: none">
             <h2 class="section-title">System Logs</h2>
