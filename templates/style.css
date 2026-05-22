@@ -1,0 +1,345 @@
+*, *::before, *::after { 
+    box-sizing: border-box; 
+}
+:root {
+    --bg-main: #000000;
+    --bg-panel: #0a0a0a;
+    --bg-input: #111111;
+    --bg-log: #050505;
+    --accent-white: #ffffff;
+    --border-color: #222222;
+    --text-secondary: #666666;
+    --text-log: #cccccc;
+    --btn-gray: #111111;
+    --btn-border: #333333;
+    --icon-dim: #999999;     
+    --bg-active: #1a1a1a;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: var(--bg-main);
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+input, button, text, tspan { font-family: inherit; }
+
+.app-container {
+    background: var(--bg-panel);
+    width: 100%;
+    max-width: 100%; /* <-- FIXED TYPO HERE */
+    min-width: 0;
+    height: 100dvh; 
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    user-select: none;
+    -webkit-user-select: none;
+    position: relative; 
+    overflow: hidden; 
+}
+
+/* --- Navigation Bar --- */
+.navbar {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+.nav-link {
+    flex: 1;
+    text-align: center;
+    padding: 20px 0;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+}
+
+.nav-link.active {
+    color: var(--accent-white);
+    background: var(--bg-active);
+    box-shadow: inset 0 -2px 0 var(--accent-white);
+}
+
+/* --- View Containers --- */
+.view-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.hidden { display: none !important; }
+
+/* --- CORE LAYOUT --- */
+.middle-content {
+    flex: 1; 
+    display: flex;
+    flex-direction: column;
+    padding: 15px 20px;
+    gap: 15px; 
+    min-height: 0;
+    
+    /* --- ADD THESE TWO LINES --- */
+    min-width: 0;     /* Stops the flex-wrap bug from forcing the parent to widen */
+    max-width: 100%;  /* Forces the parent to strictly obey the bounds of the screen */
+}
+.status-container { 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px; 
+    color: var(--text-secondary); 
+    font-weight: 700;               
+    text-transform: uppercase; 
+    margin-bottom: 5px; 
+}
+
+.mic-status.muted {
+    color: #ef4444;
+}
+.status-text.connected { color: #4ade80; }
+
+.section-label {
+    font-size: 11px; color: var(--text-secondary); 
+    text-transform: uppercase; font-weight: 700; 
+    margin-bottom: -5px; letter-spacing: 1px;
+}
+
+/* --- SHARED LOG BOX STYLES --- */
+.log-area {
+    background: var(--bg-log);
+    border: 1px solid var(--btn-border);
+    border-radius: 12px;
+    padding: 15px;
+    overflow-y: auto; /* 'auto' is cleaner than 'scroll' as it hides when empty */
+    
+    /* --- ADD THESE 3 LINES TO STOP VERTICAL EXPANSION --- */
+    flex: 1;
+    min-height: 0;
+    height: 0; 
+    
+    min-width: 0; 
+}
+
+/* Apply your custom scrollbar to ALL log areas, not just the terminal */
+.log-area::-webkit-scrollbar { width: 6px; }
+.log-area::-webkit-scrollbar-track { background: transparent; }
+.log-area::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+/* --- LIVE TRANSCRIPTION (REMOTE TAB) --- */
+
+.live-text-container {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+
+    /* --- ADD height: 0 TO REINFORCE THE BOUNDARY --- */
+    min-height: 0;
+    height: 0; 
+    min-width: 0; 
+
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.word-item {
+    font-size: 13px; 
+    color: var(--accent-white); 
+    padding: 0; 
+    background: transparent;
+
+    max-width: 100%;
+    min-width: 0;
+
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+
+    flex: 0 1 auto;
+}
+.controls-row {
+    flex-shrink: 0; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+
+    min-width: 0;   /* ADD THIS */
+}
+/* Optional: If you still want the "active" word to flash green without breaking the layout */
+.word-item.active {
+    color: #4ade80;
+    font-weight: bold;
+    /* Removed the scale() and box-shadow so it doesn't distort the line spacing */
+}
+/* --- SYSTEM TERMINAL (LOGS TAB) --- */
+.terminal-container {
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.terminal-container::-webkit-scrollbar { width: 6px; }
+.terminal-container::-webkit-scrollbar-track { background: transparent; }
+.terminal-container::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+/* Clean Terminal Formatting */
+.log-entry { 
+    margin-bottom: 2px; 
+    line-height: 1.4; 
+    color: var(--accent-white); /* Default text color for logs */
+}
+
+/* --- BUTTON CONTROLS --- */
+.controls-row {
+    flex-shrink: 0; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.btn-cluster {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 15px;
+
+    flex: 1;
+    max-width: 200px;
+
+    min-width: 0;  /* ADD THIS */
+}
+
+.action-btn {
+    height: 70px;
+    border-radius: 22px;
+    background: var(--btn-gray);
+    border: 1px solid var(--btn-border);
+    color: var(--icon-dim);
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.1s ease;
+}
+
+.action-btn .icon { width: 22px; height: 22px; margin-right: 15px; display: flex; align-items: center; justify-content: center; }
+.action-btn .icon svg { fill: var(--icon-dim); transition: all 0.2s ease; }
+.action-btn:active { background: var(--accent-white); color: var(--bg-main); }
+.action-btn:active svg { fill: var(--bg-main); }
+
+/* --- SLIDER --- */
+.arc-container {
+    flex: 1; height: 100%; max-width: 160px;
+    cursor: ns-resize; touch-action: none;
+    display: flex; align-items: center; justify-content: flex-end;
+}
+.arc-container svg { width: 100%; height: 100%; max-height: 250px; }
+
+/* --- FOOTER INPUT --- */
+.input-footer {
+    flex-shrink: 0; padding: 20px;
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
+    background: var(--bg-panel); border-top: 1px solid var(--border-color);
+}
+
+.input-wrapper { position: relative; display: flex; align-items: center; }
+.text-input {
+    width: 100%; background: var(--bg-input); border: 1px solid var(--btn-border);
+    color: var(--accent-white); font-size: 16px; padding: 15px 60px 15px 20px;
+    border-radius: 30px; outline: none; -webkit-user-select: text; user-select: text;
+}
+.inner-send-btn {
+    position: absolute; right: 8px; height: 40px; width: 40px;
+    background: var(--accent-white); border: none; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; padding-left: 4px; 
+}
+.inner-send-btn svg { width: 20px; height: 20px; fill: var(--bg-main); }
+.inner-send-btn:active { transform: scale(0.9); opacity: 0.9; }
+
+/* --- CUSTOM REBOOT MODAL --- */
+.modal-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 22px;
+    padding: 25px;
+    width: 85%;
+    max-width: 320px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+}
+
+.modal-text {
+    color: var(--accent-white);
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 5px;
+    margin-bottom: 25px;
+    line-height: 1.4;
+}
+
+.modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.modal-btn {
+    width: 100%;
+    justify-content: center;
+    height: 60px;
+}
+
+/* --- RESPONSIVE ADJUSTMENTS --- */
+@media (max-width: 380px) {
+    .middle-content { padding: 10px 15px; gap: 10px; }
+    .action-btn { height: 60px; font-size: 12px; padding: 0 15px; }
+}
+
+/* 1. Shrink buttons slightly on smaller phones (Your original code) */
+@media (max-height: 600px) {
+    .action-btn { height: 50px; }
+}
+
+/* 2. ONLY hide controls when the screen gets extremely short (Keyboard is open) */
+@media (max-height: 400px) {
+    .controls-row {
+        display: none !important;
+    }
+    
+    .live-text-container {
+        min-height: 80px;
+        flex-shrink: 0;
+    }
+}

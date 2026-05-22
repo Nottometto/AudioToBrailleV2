@@ -1,0 +1,15 @@
+body {
+     background-color: black;
+    }
+
+div {
+    background-color: white;
+}
+
+#text-display{
+    border: 2px solid;
+    border-radius: 5px;
+    height: 75px;
+    width: 200px;
+    overflow: auto;
+}
