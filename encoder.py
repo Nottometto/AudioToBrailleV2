@@ -1,33 +1,22 @@
 import time
 import text_queue as tq
 import web_server as ws
-try:
-    import RPi.GPIO as G
-    G.setmode(G.BCM)
-    G.setwarnings(False)
-    G.setup(9, G.IN, pull_up_down=G.PUD_UP)
-    G.setup(22, G.IN, pull_up_down=G.PUD_UP)
-    G.setup(14, G.IN, pull_up_down=G.PUD_UP)
-
-except ImportError as e:
-    print("Import Error!", e)
-    G = None
 
 counter = 2.0
 
 def speed_control():
     global counter
 
-    if not G:
+    if not tq.G:
         return
-    last_clock_state = G.input(9)
-    last_button_state = G.input(14)
+    last_clock_state = tq.G.input(9)
+    last_button_state = tq.G.input(14)
     last_encoder_time = 0.0
 
     try:
         while True:
-            current_button_state = G.input(14)
-            if current_button_state == G.LOW and last_button_state == G.HIGH:
+            current_button_state = tq.G.input(14)
+            if current_button_state == tq.G.LOW and last_button_state == tq.G.HIGH:
                 
                 tq.clear_flag = True
                 print("text queue cleared")
@@ -35,13 +24,13 @@ def speed_control():
                 time.sleep(0.001)
 
             last_button_state = current_button_state
-            current_state = G.input(9)
+            current_state = tq.G.input(9)
 
-            if current_state != last_clock_state and current_state == G.LOW:
+            if current_state != last_clock_state and current_state == tq.G.LOW:
                 current_time = time.time()
 
                 if (current_time - last_encoder_time) > 0.1:
-                    if G.input(22) != current_state:
+                    if tq.G.input(22) != current_state:
                         counter += 0.3
 
                     else:

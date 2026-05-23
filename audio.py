@@ -17,16 +17,6 @@ import text_queue as tq
 import web_server as ws
 import time
 
-#try import GPIO
-try:
-    import RPi.GPIO as G
-    G.setmode(G.BCM)
-    G.setwarnings(False)
-    G.setup(27, G.IN, pull_up_down= G.PUD_UP)
-except ImportError as e:
-    print("Import Error!", e)
-    G = None
-
 #load api key
 import os
 from dotenv import load_dotenv
@@ -39,11 +29,11 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 is_muted = False 
 
-if G:
+if tq.G:
     def monitor_mute_button():
         global is_muted
         while True:
-            current_state = (G.input(27) == G.LOW)
+            current_state = (tq.G.input(27) == tq.G.LOW)
             
             if current_state != is_muted:
                 is_muted = current_state
@@ -61,25 +51,22 @@ if G:
 
 def on_turn(self: Type[StreamingClient], event: TurnEvent):
     global handled_word_count, is_muted
-
-    if is_muted:
-        handled_word_count = 0 
-        return
-
     if not event.transcript:
         return
     
     current_words = event.transcript.split()
+
     if len(current_words) > handled_word_count:
         new_words = current_words[handled_word_count:]
         
         for word in new_words:
-            tq.text_queue.append(word)
+            
             handled_word_count += 1
-
-            ws.send_queue_update(word)
-    
-        print(list(tq.text_queue))
+            if not is_muted:
+                tq.text_queue.append(word)
+                ws.send_queue_update(word)
+        if not is_muted:
+            print(list(tq.text_queue))
     
     if event.end_of_turn:
         handled_word_count = 0

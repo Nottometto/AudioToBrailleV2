@@ -47,11 +47,15 @@ def main():
         threading.Thread(target=hardware_loop, daemon=True).start()
         threading.Thread(target=e.speed_control, daemon=True).start()
         threading.Thread(target=tq.user_text_input, daemon=True).start()
+        threading.Thread(target=ws.start_server, daemon=True).start()
+        
         m.cell_config()
-        ws.start_server()
+        while True:
+            time.sleep(0.5)
 
     except KeyboardInterrupt:
         print("Exiting...")
+        m.clear_all()
 
 if __name__ == "__main__":
     main()

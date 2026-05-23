@@ -82,3 +82,14 @@ def cell_config():
                 time.sleep(0.05)
                 kit.servo[right_channel].angle = final_right_angle
             time.sleep(0.01)
+
+def clear_all():
+    if hardware_detect:
+        for j in range(4):
+            left_channel = j * 2
+            right_channel = (j * 2) + 1
+
+            kit.servo[left_channel].angle = 0
+            time.sleep(0.05)
+            kit.servo[right_channel].angle = 0
+        time.sleep(0.1)
