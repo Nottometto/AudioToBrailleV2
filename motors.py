@@ -66,6 +66,7 @@ def set_cell(cell, raw_letter):
 
     if hardware_detect:
         kit.servo[left_channel].angle = final_left_angle
+        time.sleep(0.05)
         kit.servo[right_channel].angle = final_right_angle
 
 def cell_config():
@@ -85,12 +86,6 @@ def cell_config():
             time.sleep(0.01)
 
 def clear_all():
-    if hardware_detect:
-        for j in range(4):
-            left_channel = j * 2
-            right_channel = (j * 2) + 1
-
-            kit.servo[left_channel].angle = 0
-            time.sleep(0.05)
-            kit.servo[right_channel].angle = 0
-        time.sleep(0.1)
+    for i in range(4):
+        set_cell(i, ' ')
+    print("cleared")
