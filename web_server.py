@@ -60,6 +60,12 @@ def send_mic_update(mic):
     else:
         socketio.emit('mic_update', {'mic': "Unmuted"})
 
+def send_pause_update(pause):
+    if pause:
+        socketio.emit('pause_update', {'pause': "Paused"})
+    else:
+        socketio.emit('pause_update', {'pause': "Unpaused"})
+
 
 
 #Receiving
@@ -83,7 +89,6 @@ def handle_text(data):
 #button
 @socketio.on('clear_queue')
 def handle_clear():
-    tq.text_queue.clear()
     tq.clear_flag = True
     time.sleep(0.05) 
     tq.channel = 0
@@ -92,6 +97,20 @@ def handle_clear():
     m.clear_all()
 
     print("Web cleared the queue!")
+
+@socketio.on('pause_queue')
+def handle_pause():
+    if not tq.pause_flag:
+        tq.pause_flag = True
+        tq.speed_holder = tq.speed_counter
+        tq.speed_counter = tq.pause
+        send_pause_update(tq.pause_flag)
+    else:
+        tq.pause_flag = False
+        tq.speed_counter = tq.speed_holder
+        tq.speed_holder = 0
+        send_pause_update(tq.pause_flag)
+
 
 @socketio.on('reboot_device')
 def handle_reboot():
@@ -106,7 +125,8 @@ def handle_speed(data):
         new_speed = float(data.get("speed"))
 
         tq.speed_counter = max(0.1, min(10.0, new_speed))
-        print(f"Web set speed to: {e.counter}")
+        send_speed_update(tq.speed_counter)
+        print(f"Web set speed to: {tq.speed_counter}")
     except (ValueError, TypeError):
         pass
 

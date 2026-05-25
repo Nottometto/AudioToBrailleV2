@@ -10,6 +10,11 @@ import threading
 def hardware_loop():
     while True:
         try:
+            if tq.clear_flag:
+                tq.text_queue.clear()
+                tq.channel = 0
+                tq.clear_flag = False
+
             process_word = tq.clean_word()
             if not process_word:
                 continue
@@ -26,10 +31,13 @@ def hardware_loop():
                     sleep_counter += 0.01
 
                 if tq.clear_flag:
-                    tq.clear_flag = False   
                     break
 
                 m.set_cell(cell, letter)
+
+                if tq.clear_flag:
+                    break
+                
                 tq.channel += 1
                 
                 braille_array = m.BRAILLE_MAP.get(letter, ('000', '000'))

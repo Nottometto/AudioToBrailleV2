@@ -5,11 +5,14 @@ from collections import deque
 text_queue = deque()
 word_clean = re.compile(r'[^a-z\s]')
 
+speed_holder = 0
 speed_counter = 2.0
 channel = 0
 audio_word_count = 0
+pause = 10000
 
 mute_flag = False
+pause_flag = False
 clear_flag = False
 
 #import G
@@ -19,9 +22,10 @@ try:
     G.setmode(G.BCM)
     G.setwarnings(False)
 
-    G.setup(9, G.IN, pull_up_down=G.PUD_UP)
+    G.setup(7, G.IN, pull_up_down=G.PUD_UP)
     G.setup(14, G.IN, pull_up_down=G.PUD_UP)
-    G.setup(22, G.IN, pull_up_down=G.PUD_UP)
+    G.setup(25, G.IN, pull_up_down=G.PUD_UP)
+    G.setup(8, G.IN, pull_up_down=G.PUD_UP)
     G.setup(27, G.IN, pull_up_down= G.PUD_UP)
 
 except ImportError as e:

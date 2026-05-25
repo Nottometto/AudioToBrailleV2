@@ -8,23 +8,19 @@
     <script>
         function setAppHeight() {
             const doc = document.documentElement;
-            // If the browser supports Visual Viewport (modern Android/iOS)
             if (window.visualViewport) {
                 doc.style.setProperty('--app-height', `${window.visualViewport.height}px`);
             } else {
-                // Fallback for very old browsers
                 doc.style.setProperty('--app-height', `${window.innerHeight}px`);
             }
         }
 
-        // Listen to the visual viewport specifically for changes (like keyboards or system bars)
         if (window.visualViewport) {
             window.visualViewport.addEventListener('resize', setAppHeight);
         } else {
             window.addEventListener('resize', setAppHeight);
         }
         
-        // Run once on load
         window.addEventListener('DOMContentLoaded', setAppHeight);
         setAppHeight();
     </script>
@@ -52,6 +48,7 @@
             
             <div class="control-section">
                 <div class="button-group">
+                    <button id="pause-btn">Pause</button>
                     <button id="clear-btn">Clear All</button>
                     <button id="reboot-btn">Reboot</button>
                 </div>
