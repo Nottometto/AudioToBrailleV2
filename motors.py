@@ -1,4 +1,5 @@
 import time
+
 hardware_detect = False
 try:
     from adafruit_servokit import ServoKit
@@ -65,6 +66,7 @@ def set_cell(cell, raw_letter):
 
     if hardware_detect:
         kit.servo[left_channel].angle = final_left_angle
+        time.sleep(0.05)
         kit.servo[right_channel].angle = final_right_angle
 
 def cell_config():
@@ -82,3 +84,8 @@ def cell_config():
                 time.sleep(0.05)
                 kit.servo[right_channel].angle = final_right_angle
             time.sleep(0.01)
+
+def clear_all():
+    for i in range(4):
+        set_cell(i, ' ')
+    print("cleared")

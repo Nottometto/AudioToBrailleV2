@@ -1,15 +1,651 @@
-body {
-     background-color: black;
-    }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-div {
-    background-color: white;
+:root {
+  /* Core Colors */
+  --bg-dark: #0a0a0a; /* Almost pure black */
+  --bg-glow: radial-gradient(circle at top left, #242424, #0a0a0a 80%);
+  
+  /* Panels */
+  --glass-bg: rgba(255, 255, 255, 0.04); 
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+  --glass-recessed: inset 0 2px 10px rgba(0, 0, 0, 0.6);
+  
+  /* Accents */
+  --accent-main: #ffffff; /* Crisp White */
+  --accent-glow: rgba(255, 255, 255, 0.3);
+  
+  /* Typography */
+  --text-main: #ffffff;
+  --text-muted: #808080; /* Neutral grey */
 }
 
-#text-display{
-    border: 2px solid;
-    border-radius: 5px;
-    height: 75px;
-    width: 200px;
-    overflow: auto;
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  padding: 2rem;
+  background: var(--bg-glow);
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* --------------------------------
+   Global Glass Panel Style
+--------------------------------- */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  box-shadow: var(--glass-shadow);
+  width: 100%;
+  max-width: 420px;
+  padding: 1.5rem;
+}
+
+.page-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* --------------------------------
+   Status Section
+--------------------------------- */
+.status-section {
+  font-size: 0.9rem;
+  color: var(--text-main);
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* --------------------------------
+   Current Text Box (Recessed)
+--------------------------------- */
+.section-label {
+  font-size: 0.85rem;
+  color: var(--text-main);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.recessed-box {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: var(--glass-recessed);
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+  min-height: 3rem;
+  word-wrap: break-word;
+  word-break: break-all;
+}
+
+#text-display {
+  height: 210px;
+  overflow-y: auto;
+  display: block; 
+  white-space: pre-wrap;
+}
+
+/* --------------------------------
+   Custom Scrollbar
+--------------------------------- */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-main);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+/* Active char inside recessed-box */
+.active-char {
+  color: var(--accent-main);
+  text-shadow: 0 0 8px var(--accent-glow);
+}
+
+/* --------------------------------
+   Letter & Braille Box (Elevated)
+--------------------------------- */
+.elevated-box {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05), 0 4px 15px rgba(0, 0, 0, 0.2);
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.data-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+  min-height: 2rem;
+}
+
+.data-value {
+  font-size: 1.2rem;
+  font-family: monospace;
+  color: var(--text-main);
+  white-space: pre;
+}
+
+.data-value.blue {
+  color: var(--accent-main);
+  text-shadow: 0 0 10px var(--accent-glow);
+  font-size: 1.5rem;
+  min-width: 20px;
+  text-align: right;
+}
+
+/* --------------------------------
+   Visual Braille Dots
+--------------------------------- */
+#dot-display {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  gap: 24px; /* Big space BETWEEN different cells */
+}
+
+.braille-container {
+  display: flex;
+  gap: 4px; /* Tight space BETWEEN the two columns in a cell */
+  align-items: center;
+}
+
+.braille-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px; /* Tight space BETWEEN the dots vertically */
+}
+
+.mini-braille-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 1.2rem 0.8rem;
+  width: 100%;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05), 0 4px 15px rgba(0, 0, 0, 0.4);
+  overflow-x: auto;
+}
+
+.mini-braille-box .braille-dot {
+  width: 16px;
+  height: 16px;
+}
+
+.braille-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--text-main);
+  opacity: 0.15;
+  transition: all 0.2s ease;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.8);
+}
+
+.braille-dot.active {
+  background: var(--accent-main);
+  opacity: 1;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.6), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+}
+
+/* --------------------------------
+   Middle Control Section
+--------------------------------- */
+.control-section {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 16px;
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+/* --------------------------------
+   Buttons (Tactile)
+--------------------------------- */
+.button-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  flex-shrink: 0;
+  width: 120px;
+}
+
+.empty-box {
+  flex: 1;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed var(--glass-border);
+  border-radius: 12px;
+  min-height: 40px;
+}
+
+button {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  color: var(--text-main);
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.2), 
+             inset 0 1px 1px rgba(255, 255, 255, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  width: 100%;
+}
+
+button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: translateY(1px);
+  box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+.button-group button {
+  flex: 1; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* --------------------------------
+   Input Field
+--------------------------------- */
+.input-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+input[type="text"] {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--glass-border);
+  color: var(--text-main);
+  padding: 1rem;
+  border-radius: 12px;
+  box-sizing: border-box;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+  box-shadow: var(--glass-recessed);
+}
+
+input[type="text"]:focus {
+  border-color: var(--accent-main);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3), var(--glass-recessed);
+}
+
+.btn-send {
+  background: var(--accent-main);
+  border: none;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px var(--accent-glow);
+  color: #000000;
+}
+
+.btn-send:hover {
+  background: #e6e6e6;
+  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.5);
+}
+
+/* -------------------------
+   Morphing Speed Control
+-------------------------- */
+.speed-control-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.morphing-control-wrapper {
+  position: relative;
+  height: 60px;
+  width: 290px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: 40px;
+  overflow: hidden;
+  touch-action: none;
+  transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.08), 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.presets-container {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 0 5px;
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.speed-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: none; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.speed-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: none; 
+}
+
+.speed-btn.active {
+  background: var(--accent-main);
+  color: var(--bg-dark); 
+  transform: scale(1.1);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+
+.wheel-dial-container {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  transform: translateY(10px); 
+}
+
+.dial-value-display {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--accent-main);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 8px var(--accent-glow);
+  z-index: 15;
+}
+
+.morphing-control-wrapper.is-dial-mode .presets-container {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-10px);
+}
+
+.morphing-control-wrapper.is-dial-mode .wheel-dial-container {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.center-marker {
+  position: absolute;
+  top: 22px;
+  bottom: 6px;
+  left: 50%;
+  width: 4px;
+  background-color: var(--accent-main);
+  transform: translateX(-50%);
+  border-radius: 2px;
+  z-index: 10;
+  box-shadow: 0 0 6px var(--accent-main);
+}
+
+.wheel-track {
+  display: block;
+  height: 100%;
+  position: absolute;
+  left: 50%;
+  will-change: transform;
+}
+
+.tick {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  background-color: rgba(255, 255, 255, 0.3);
+  margin-left: -1px; 
+  border-radius: 1px;
+}
+
+.tick.major { height: 24px; background-color: rgba(255, 255, 255, 0.8); }
+.tick.minor { height: 12px; }
+
+#speed-slider {
+  display: none;
+}
+/* --------------------------------
+   Confirmation Modal
+--------------------------------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 1;
+  visibility: visible;
+  transition: all 0.3s ease;
+  padding: 1rem;
+}
+
+.modal-overlay.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.modal-panel {
+  width: 90%;
+  max-width: 320px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem 1.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.05), 0 8px 30px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transform: scale(1);
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modal-overlay.hidden .modal-panel {
+  transform: scale(0.9);
+}
+
+.modal-text {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--text-main);
+  line-height: 1.5;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+}
+
+.modal-buttons button {
+  flex: 1;
+}
+
+/* Give the 'Yes' button a subtle red destructive tint on hover */
+.btn-destructive {
+  color: #ff6b6b;
+}
+
+.btn-destructive:hover {
+  background: rgba(255, 107, 107, 0.1);
+  border-color: rgba(255, 107, 107, 0.3);
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.2);
+}
+/* --------------------------------
+   Mobile Responsiveness
+--------------------------------- */
+@media (max-width: 600px) {
+  html, body {
+    /* STRICTLY follow the Visual Viewport variable. No exceptions. */
+    height: var(--app-height, 100vh) !important;
+    min-height: var(--app-height, 100vh) !important;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; 
+    position: relative;
+  }
+
+  .glass-panel {
+    max-width: 100%;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    padding: 1rem;
+    
+    /* Ensure the panel exactly fills the body, no more, no less */
+    height: 100%;
+    max-height: 100%;
+    box-sizing: border-box;
+    
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .page-content {
+    flex: 1; 
+    min-height: 0; 
+    display: flex;
+    flex-direction: column;
+  }
+
+  #text-display {
+    height: auto; 
+    flex: 1; /* Stretches to fill available space */
+    min-height: 60px; /* Let it shrink a bit more when keyboard opens */
+    margin-bottom: 1rem;
+  }
+
+  .status-section,
+  .control-section,
+  .speed-control-container,
+  .input-wrapper {
+    flex-shrink: 0; /* Prevents controls from squishing */
+  }
+
+  .control-section {
+    flex-wrap: nowrap; 
+    gap: 10px; 
+  }
+  
+  .button-group {
+    width: 90px; 
+  }
+  
+  .button-group button {
+    padding: 0.6rem 0.5rem;
+    font-size: 0.75rem;
+  }
+  
+  .mini-braille-box {
+    padding: 0.8rem 0.5rem;
+    flex: 1 1 auto !important; 
+  }
+  
+  #dot-display {
+    gap: 12px; /* Space between cells on mobile */
+  }
+  
+  .braille-container { gap: 3px !important; }
+  .braille-col { gap: 3px !important; }
+  .braille-dot { width: 12px; height: 12px; }
+
+  .morphing-control-wrapper {
+    width: 100%;
+  }
 }

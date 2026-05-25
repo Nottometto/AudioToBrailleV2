@@ -2,53 +2,146 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>AtoB Remote</title>
+    
+    <script>
+        function setAppHeight() {
+            const doc = document.documentElement;
+            if (window.visualViewport) {
+                doc.style.setProperty('--app-height', `${window.visualViewport.height}px`);
+            } else {
+                doc.style.setProperty('--app-height', `${window.innerHeight}px`);
+            }
+        }
+
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', setAppHeight);
+        } else {
+            window.addEventListener('resize', setAppHeight);
+        }
+        
+        window.addEventListener('DOMContentLoaded', setAppHeight);
+        setAppHeight();
+    </script>
+    
     <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style1.css') }}?v=8">
 </head>
 <body>
-    <nav>
-        <div id="nav-remote" onclick="switchTab('remote')">Remote</div>
-        <div id="nav-log" onclick="switchTab('log')">Logs</div>
-    </nav>
-    <div>
-        <label>Status: <span id="status-flag">Disconnected</span></label>
-        <label>Mute Flag: <span id="mute-flag">-</span></label>
+    <div id="mobile-web" class="glass-panel">
+       
+        <div id="page-remote" class="page-content">
+            
+            <div class="status-section">
+                <div>
+                    <span class="section-label" style="display:inline-block; margin-bottom:0; margin-right:4px;">Status:</span>
+                    <span id="status-flag" class="data-value blue" style="font-size: 1rem;">Disconnected</span>
+                </div>
+                <div>
+                    <span class="section-label" style="display:inline-block; margin-bottom:0; margin-right:4px;">Mic:</span>
+                    <span id="mute-flag" class="data-value blue" style="font-size: 1rem;">-</span>
+                </div>
+            </div>
+
+            <div id="text-display" class="recessed-box">No text to display currently</div>
+            
+            <div class="control-section">
+                <div class="button-group">
+                    <button id="pause-btn">Pause</button>
+                    <button id="clear-btn">Clear All</button>
+                    <button id="reboot-btn">Reboot</button>
+                </div>
+                
+                <div class="mini-braille-box" id="braille-wrapper" style="flex: 1 1 200px;">
+                    <div id="dot-display">
+                        <div class="braille-container">
+                            <div class="braille-col">
+                                <div class="braille-dot"></div>
+                                <div class="braille-dot"></div>
+                                <div class="braille-dot"></div>
+                            </div>
+                            <div class="braille-col">
+                                <div class="braille-dot"></div>
+                                <div class="braille-dot"></div>
+                                <div class="braille-dot"></div>
+                            </div>
+                        </div>
+                        <div class="braille-container">
+                            <div class="braille-col">
+                                <div class="braille-dot"></div>
+                                <div class="braille-dot"></div>
+                                <div class="braille-dot"></div>
+                            </div>
+                            <div class="braille-col">
+                                <div class="braille-dot"></div>
+                                <div class="braille-dot"></div>
+                                <div class="braille-dot"></div>
+                            </div>
+                        </div>
+                        <div class="braille-container">
+                            <div class="braille-col">
+                                <div class="braille-dot"></div>
+                                <div class="braille-dot"></div>
+                                <div class="braille-dot"></div>
+                            </div>
+                            <div class="braille-col">
+                                <div class="braille-dot"></div>
+                                <div class="braille-dot"></div>
+                                <div class="braille-dot"></div>
+                            </div>
+                        </div>
+                        <div class="braille-container">
+                            <div class="braille-col">
+                                <div class="braille-dot"></div>
+                                <div class="braille-dot"></div>
+                                <div class="braille-dot"></div>
+                            </div>
+                            <div class="braille-col">
+                                <div class="braille-dot"></div>
+                                <div class="braille-dot"></div>
+                                <div class="braille-dot"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="speed-control-container">
+                <input type="hidden" id="speed-slider" value="2.0">
+                
+                <div class="morphing-control-wrapper" id="morphing-control-wrapper">
+                  <div class="presets-container" id="presets">
+                    </div>
+
+                  <div class="wheel-dial-container">
+                    <div class="dial-value-display" id="dial-value-display">2.0x</div>
+                    <div class="center-marker"></div>
+                    <div class="wheel-track" id="track"></div>
+                  </div>
+                </div>
+            </div>
+
+            <div class="input-wrapper">
+                <div class="input-row">
+                    <input type="text" id="text-input" placeholder="Type something...">
+                    <button id="submit-btn" class="btn-send">&#10148;</button>
+                </div>
+            </div>
+
+        </div>
+
     </div>
-
-    <div id="page-remote">
-
-        <div id="text-display">No text to display currently</div>
-        <div id="braille-display">
-            Letter: <div id="letter-display"> - </div> 
-            <br>
-            Braille: <div id="dot-display">[0,0,0,0,0,0]</div>
-        </div>
-
-        <div>
-            <button id="clear-btn">Clear All</button>
-            <br>
-            <button id="reboot-btn">Reboot Machine</button>
-        </div>
-
-        <div>
-            <label>Input text here:</label>
-            <input type="text" id="text-input">
-            <button id="submit-btn">Submit</button>
-        </div>
-
-        <div>
-            <label for="slider">Speed: <span id="speed-display">2</span></label>
-            <input type="range" id="speed-slider" min="0.1" max="10" step="0.1" value="2">
+    <div id="reboot-modal" class="modal-overlay hidden">
+        <div class="modal-panel">
+            <div class="modal-text">Are you sure? This will restart the system.</div>
+            <div class="modal-buttons">
+                <button id="cancel-reboot-btn">No</button>
+                <button id="confirm-reboot-btn" class="btn-destructive">Yes</button>
+            </div>
         </div>
     </div>
-
-    <div id="page-log" style="display: none">
-        <h2>System Logs</h2>
-    </div>
-
     
-
-    <script src="static\script1.js"></script>
+    <script src="{{ url_for('static', filename='script1.js') }}"></script>
 </body>
 </html>
